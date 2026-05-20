@@ -1,0 +1,259 @@
+@import 'tailwindcss';
+
+@theme {
+  /* brand palette — sampled from the ONE TIME logo */
+  --color-navy: #0c1c36;
+  --color-navy-deep: #081325;
+  --color-navy-soft: #14253f;
+  --color-navy-700: #1d3050;
+  --color-navy-600: #2b3f63;
+  --color-gold: #c49a3c;
+  --color-gold-deep: #a9842c;
+  --color-gold-soft: #d8b968;
+  --color-gold-pale: #ece0c4;
+  --color-cream: #f4efe4;
+  --color-ivory: #faf7f0;
+  --color-paper: #ffffff;
+  --color-ink: #1b2334;
+  --color-ink-soft: #41485a;
+  --color-muted: #767c8c;
+  --color-line: #e6e0d1;
+
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, 'Apple SD Gothic Neo', sans-serif;
+  --font-serif: 'Cormorant Garamond', 'Noto Serif KR', 'Nanum Myeongjo', serif;
+  --font-myeongjo: 'Noto Serif KR', 'Nanum Myeongjo', serif;
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  :root {
+    scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-gold) 32%, transparent);
+    color: var(--color-navy);
+  }
+
+  /* refined gold scrollbar accent */
+  ::-webkit-scrollbar {
+    width: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-cream);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-navy) 32%, transparent);
+    border: 3px solid var(--color-cream);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-navy);
+  }
+}
+
+@layer components {
+  /* ---- scroll reveal ---- */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(34px);
+    transition:
+      opacity 0.95s var(--ease-out-soft),
+      transform 0.95s var(--ease-out-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  [data-reveal='fade'] {
+    transform: translateY(0);
+  }
+  [data-reveal='left'] {
+    transform: translateX(-44px);
+  }
+  [data-reveal='right'] {
+    transform: translateX(44px);
+  }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---- typographic helpers ---- */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: var(--font-serif);
+    font-size: clamp(0.78rem, 1.4vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--color-gold-deep);
+  }
+  .eyebrow::before {
+    content: '';
+    width: clamp(26px, 4vw, 46px);
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+  }
+  .eyebrow--center::after {
+    content: '';
+    width: clamp(26px, 4vw, 46px);
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  .display {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .display-kr {
+    font-family: var(--font-myeongjo);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  /* gold underline flourish */
+  .rule-gold {
+    width: 58px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-gold), var(--color-gold-soft));
+  }
+
+  /* hairline grid overlay for dark sections */
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, rgba(216, 185, 104, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(216, 185, 104, 0.06) 1px, transparent 1px);
+    background-size: clamp(48px, 7vw, 96px) clamp(48px, 7vw, 96px);
+  }
+
+  /* shimmering CTA */
+  .btn-gold {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-gold-soft), var(--color-gold));
+    color: var(--color-navy);
+  }
+  .btn-gold::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.55) 50%,
+      transparent 70%
+    );
+    transform: translateX(-130%);
+    transition: transform 0.85s var(--ease-out-soft);
+  }
+  .btn-gold:hover::after {
+    transform: translateX(130%);
+  }
+}
+
+/* honor reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .btn-gold::after {
+    display: none;
+  }
+  .anim-float,
+  .anim-spin-slow,
+  .anim-pulse-ring {
+    animation: none !important;
+  }
+}
+
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+.anim-float {
+  animation: floatY 7s ease-in-out infinite;
+}
+
+@keyframes spinSlow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.anim-spin-slow {
+  animation: spinSlow 60s linear infinite;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.anim-pulse-ring {
+  animation: pulseRing 3.6s var(--ease-out-soft) infinite;
+}
+
+@keyframes scrollCue {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(13px);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.anim-scroll-cue {
+  animation: scrollCue 2.1s var(--ease-out-soft) infinite;
+}
