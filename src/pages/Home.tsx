@@ -200,7 +200,9 @@ function Highlights() {
         <div className="text-center" data-reveal="fade">
           <p className="eyebrow eyebrow--center">Why ONE TIME · 핵심 가치</p>
           <h2 className="display-kr mx-auto mt-6 max-w-[28rem] text-[clamp(1.95rem,3.7vw,3.05rem)] leading-[1.32] text-navy">
-            원타임이 지키는 <span className="text-gold-deep">세 가지 원칙</span>
+            원타임이 지키는
+            <br />
+            <span className="text-gold-deep">세 가지 원칙</span>
           </h2>
         </div>
 
