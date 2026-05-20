@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import MarketOverview from '../components/MarketOverview'
 import { HIGHLIGHTS, SERVICES } from '../data'
 
 const PRINCIPLES = ['정확한 분석', '책임 있는 의사결정', '고객과의 신뢰']
@@ -347,6 +348,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <MarketOverview />
       <Intro />
       <Highlights />
       <ServicesPreview />
