@@ -206,18 +206,18 @@ export default function MarketOverview() {
   return (
     <section className="border-t border-line bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
-        <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
-          <div data-reveal="fade">
-            <p className="eyebrow">Market Watch · 실시간 시장 지표</p>
+        <div className="flex flex-col items-center gap-7">
+          <div className="text-center" data-reveal="fade">
+            <p className="eyebrow eyebrow--center">Market Watch · 실시간 시장 지표</p>
             <h2 className="display-kr mt-6 text-[clamp(1.95rem,3.7vw,3.05rem)] leading-[1.32] text-navy">
-              원타임 그룹이 전하는
+              원타임 그룹이 정하는
               <br />
               <span className="text-gold-deep">핵심 시장 흐름</span>
             </h2>
           </div>
 
           <div
-            className="flex items-center gap-3 sm:pb-1.5"
+            className="flex items-center gap-3"
             data-reveal="fade"
           >
             <span className="inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1.5">
@@ -286,7 +286,7 @@ export default function MarketOverview() {
         </div>
 
         <div
-          className="mt-5 flex flex-col gap-1.5 rounded-xl border border-gold/20 bg-gold/[0.06] px-5 py-4 text-[0.82rem] sm:flex-row sm:items-center sm:justify-between"
+          className="mt-5 flex flex-col items-center gap-1.5 rounded-xl border border-gold/20 bg-gold/[0.06] px-5 py-4 text-center text-[0.82rem]"
           data-reveal="fade"
         >
           <span className="font-semibold text-ink-soft">
