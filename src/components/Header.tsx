@@ -28,7 +28,7 @@ function Brandmark({
       />
       <span className="flex flex-col leading-none whitespace-nowrap">
         <span
-          className={`display text-[1.18rem] tracking-[0.18em] sm:text-[1.32rem] ${
+          className={`brandmark text-[1.18rem] tracking-[0.18em] sm:text-[1.32rem] ${
             light ? 'text-ivory' : 'text-navy'
           }`}
         >
