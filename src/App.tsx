@@ -1,34 +1,52 @@
+import { useEffect } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useScrollReveal } from './hooks/useScrollReveal'
+import ScrollToTop from './components/ScrollToTop'
 import Header from './components/Header'
-import Hero from './components/Hero'
-import About from './components/About'
-import Greeting from './components/Greeting'
-import Services from './components/Services'
-import Philosophy from './components/Philosophy'
-import Process from './components/Process'
-import Contact from './components/Contact'
 import Footer from './components/Footer'
+import Home from './pages/Home'
+import About from './pages/About'
+import Services from './pages/Services'
+import Process from './pages/Process'
+import Contact from './pages/Contact'
+import NotFound from './pages/NotFound'
+
+const TITLES: Record<string, string> = {
+  '/': '원타임 그룹 | ONE TIME INVEST COMPANY — 한 번의 기회가 미래를 바꿉니다',
+  '/about': '회사소개 | 원타임 그룹',
+  '/services': '사업영역 | 원타임 그룹',
+  '/process': '프로세스 | 원타임 그룹',
+  '/contact': '상담 문의 | 원타임 그룹',
+}
 
 function App() {
-  useScrollReveal()
+  const location = useLocation()
+  useScrollReveal(location.pathname)
+
+  useEffect(() => {
+    document.title =
+      TITLES[location.pathname] ?? '페이지를 찾을 수 없습니다 | 원타임 그룹'
+  }, [location.pathname])
 
   return (
     <>
       <a
-        href="#home"
+        href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-navy focus:px-5 focus:py-2.5 focus:text-sm focus:text-ivory"
       >
         본문 바로가기
       </a>
+      <ScrollToTop />
       <Header />
-      <main>
-        <Hero />
-        <About />
-        <Greeting />
-        <Services />
-        <Philosophy />
-        <Process />
-        <Contact />
+      <main id="main">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/process" element={<Process />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </main>
       <Footer />
     </>

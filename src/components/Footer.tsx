@@ -1,10 +1,11 @@
+import { Link } from 'react-router-dom'
+
 const QUICK = [
-  { id: 'about', label: '회사소개' },
-  { id: 'greeting', label: '인사말' },
-  { id: 'services', label: '사업영역' },
-  { id: 'philosophy', label: '투자철학' },
-  { id: 'process', label: '프로세스' },
-  { id: 'contact', label: '상담 문의' },
+  { to: '/', label: '홈' },
+  { to: '/about', label: '회사소개' },
+  { to: '/services', label: '사업영역' },
+  { to: '/process', label: '프로세스' },
+  { to: '/contact', label: '상담 문의' },
 ]
 
 const INFO = [
@@ -46,9 +47,9 @@ export default function Footer() {
             </p>
             <ul className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-1">
               {QUICK.map((q) => (
-                <li key={q.id}>
-                  <a
-                    href={`#${q.id}`}
+                <li key={q.to}>
+                  <Link
+                    to={q.to}
                     className="group inline-flex items-center gap-2 text-[0.92rem] text-ivory/65 transition-colors duration-300 hover:text-gold-soft"
                   >
                     <span
@@ -56,7 +57,7 @@ export default function Footer() {
                       aria-hidden
                     />
                     {q.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -79,12 +80,12 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-            <a
-              href="#contact"
+            <Link
+              to="/contact"
               className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold/40 px-5 py-2.5 text-[0.86rem] font-semibold text-gold-soft transition-colors duration-300 hover:bg-gold hover:text-navy"
             >
               상담 문의하기 <span aria-hidden>→</span>
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -101,23 +102,9 @@ export default function Footer() {
           <p className="text-[0.78rem] tracking-[0.04em] text-ivory/45">
             © 2026 ONE TIME INVEST COMPANY. All rights reserved.
           </p>
-          <div className="flex items-center gap-5">
-            <span className="text-[0.78rem] text-ivory/45">
-              원타임 그룹 · 대표 권성수
-            </span>
-            <a
-              href="#home"
-              className="group inline-flex items-center gap-1.5 text-[0.78rem] font-semibold text-gold-soft"
-            >
-              맨 위로
-              <span
-                className="transition-transform duration-300 group-hover:-translate-y-0.5"
-                aria-hidden
-              >
-                ↑
-              </span>
-            </a>
-          </div>
+          <span className="text-[0.78rem] text-ivory/45">
+            원타임 그룹 · 대표 권성수
+          </span>
         </div>
       </div>
     </footer>

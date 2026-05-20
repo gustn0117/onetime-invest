@@ -45,7 +45,7 @@
 
   body {
     font-family: var(--font-sans);
-    background-color: var(--color-cream);
+    background-color: #ffffff;
     color: var(--color-ink);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -64,11 +64,11 @@
     width: 11px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--color-cream);
+    background: #ffffff;
   }
   ::-webkit-scrollbar-thumb {
-    background: color-mix(in srgb, var(--color-navy) 32%, transparent);
-    border: 3px solid var(--color-cream);
+    background: color-mix(in srgb, var(--color-navy) 30%, transparent);
+    border: 3px solid #ffffff;
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {

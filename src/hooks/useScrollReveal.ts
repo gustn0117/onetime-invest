@@ -3,8 +3,11 @@ import { useEffect } from 'react'
 /**
  * Adds the `is-visible` class to every `[data-reveal]` element once it
  * scrolls into view. A single shared IntersectionObserver keeps it cheap.
+ *
+ * Pass the current route key so the observer re-binds after navigation,
+ * since each page mounts a fresh set of `[data-reveal]` elements.
  */
-export function useScrollReveal() {
+export function useScrollReveal(routeKey?: string) {
   useEffect(() => {
     const els = Array.from(
       document.querySelectorAll<HTMLElement>('[data-reveal]'),
@@ -31,5 +34,5 @@ export function useScrollReveal() {
 
     els.forEach((el) => io.observe(el))
     return () => io.disconnect()
-  }, [])
+  }, [routeKey])
 }
