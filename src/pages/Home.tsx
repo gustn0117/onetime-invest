@@ -30,7 +30,7 @@ function Hero() {
           </p>
 
           <h1
-            className="display-kr mt-7 text-[clamp(2.7rem,6.6vw,5.5rem)] leading-[1.15] text-ivory"
+            className="display-kr mt-7 text-[clamp(2.1rem,5vw,4.1rem)] leading-[1.18] text-ivory"
             data-reveal
             style={{ '--reveal-delay': '90ms' } as React.CSSProperties}
           >

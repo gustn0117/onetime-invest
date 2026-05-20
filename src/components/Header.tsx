@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 const NAV = [
-  { to: '/about', label: '회사소개' },
-  { to: '/services', label: '사업영역' },
-  { to: '/process', label: '프로세스' },
+  { to: '/about', label: 'About' },
+  { to: '/services', label: 'Services' },
+  { to: '/process', label: 'Process' },
 ] as const
 
 function Brandmark({
