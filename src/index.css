@@ -21,8 +21,6 @@
 
   --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
     system-ui, 'Apple SD Gothic Neo', sans-serif;
-  --font-serif: 'Cormorant Garamond', 'Noto Serif KR', 'Nanum Myeongjo', serif;
-  --font-myeongjo: 'Noto Serif KR', 'Nanum Myeongjo', serif;
 
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -106,10 +104,10 @@
     display: inline-flex;
     align-items: center;
     gap: 0.7rem;
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: clamp(0.78rem, 1.4vw, 0.95rem);
-    font-weight: 600;
-    letter-spacing: 0.34em;
+    font-weight: 700;
+    letter-spacing: 0.26em;
     text-transform: uppercase;
     color: var(--color-gold-deep);
   }
@@ -129,14 +127,14 @@
   }
 
   .display {
-    font-family: var(--font-serif);
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
   .display-kr {
-    font-family: var(--font-myeongjo);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    letter-spacing: -0.027em;
   }
 
   /* gold underline flourish */
