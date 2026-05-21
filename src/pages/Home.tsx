@@ -52,7 +52,7 @@ function Hero() {
         />
       )}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-navy-deep/94 via-navy/82 to-navy/55"
+        className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/74 to-black/46"
         aria-hidden
       />
       <div className="grid-lines absolute inset-0 opacity-70" aria-hidden />
