@@ -1,8 +1,7 @@
-const PHONE = '070-4633-5330'
+import { useEffect, useState } from 'react'
+import { fetchPublicSettings } from '../lib/settings'
 
-// TODO: 실제 채널 주소로 교체 (받는 대로 적용)
-const KAKAO_URL = '#'
-const BLOG_URL = '#'
+const PHONE = '070-4633-5330'
 
 function TalkIcon() {
   return (
@@ -37,30 +36,42 @@ function PhoneIcon() {
   )
 }
 
-const ITEMS = [
-  { key: 'kakao', label: '카톡상담', href: KAKAO_URL, icon: <TalkIcon />, external: true },
-  { key: 'blog', label: '블로그', href: BLOG_URL, icon: <BlogIcon />, external: true },
-  { key: 'tel', label: '전화상담', href: `tel:${PHONE}`, icon: <PhoneIcon />, external: false },
-]
-
-/** Fixed right-edge quick-contact dock (KakaoTalk · Blog · Phone · scroll-to-top). */
+/** Fixed right-edge quick-contact dock — one panel: KakaoTalk · Blog · Phone · scroll-to-top. */
 export default function QuickDock() {
+  const [kakaoUrl, setKakaoUrl] = useState('')
+  const [blogUrl, setBlogUrl] = useState('')
+
+  useEffect(() => {
+    fetchPublicSettings()
+      .then((s) => {
+        setKakaoUrl(s.kakao_url || '')
+        setBlogUrl(s.blog_url || '')
+      })
+      .catch(() => {})
+  }, [])
+
   const scrollTop = () =>
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
 
+  const links = [
+    { key: 'kakao', label: '카톡상담', href: kakaoUrl, icon: <TalkIcon /> },
+    { key: 'blog', label: '블로그', href: blogUrl, icon: <BlogIcon /> },
+    { key: 'tel', label: '전화상담', href: `tel:${PHONE}`, icon: <PhoneIcon /> },
+  ]
+
   return (
-    <div className="fixed right-3 top-1/2 z-40 flex -translate-y-1/2 flex-col gap-2 sm:right-5">
-      <div className="flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-[0_20px_48px_-20px_rgba(12,28,54,0.42)]">
-        {ITEMS.map((it, i) => (
+    <div className="fixed right-3 top-1/2 z-40 -translate-y-1/2 sm:right-5">
+      <div className="flex w-[78px] flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-[0_20px_48px_-20px_rgba(12,28,54,0.42)]">
+        {links.map((it, i) => (
           <a
             key={it.key}
-            href={it.href}
-            target={it.external ? '_blank' : undefined}
-            rel={it.external ? 'noreferrer' : undefined}
+            href={it.href || undefined}
+            target={it.key === 'tel' ? undefined : '_blank'}
+            rel={it.key === 'tel' ? undefined : 'noreferrer'}
             onClick={(e) => {
-              if (it.href === '#') e.preventDefault()
+              if (!it.href) e.preventDefault()
             }}
-            className={`group flex w-[78px] flex-col items-center gap-1.5 px-1.5 py-3.5 text-center transition-colors duration-300 hover:bg-cream/70 ${
+            className={`group flex flex-col items-center gap-1.5 px-1.5 py-3.5 text-center transition-colors duration-300 hover:bg-cream/70 ${
               i > 0 ? 'border-t border-line' : ''
             }`}
           >
@@ -72,26 +83,28 @@ export default function QuickDock() {
             </span>
           </a>
         ))}
-      </div>
 
-      <button
-        type="button"
-        onClick={scrollTop}
-        aria-label="맨 위로 이동"
-        className="flex w-[78px] flex-col items-center gap-0.5 rounded-2xl bg-navy py-2.5 text-ivory transition-colors duration-300 hover:bg-navy-soft"
-      >
-        <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
-          <path
-            d="M12 5v14M6 11l6-6 6 6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span className="text-[0.6rem] font-bold tracking-[0.16em]">TOP</span>
-      </button>
+        <button
+          type="button"
+          onClick={scrollTop}
+          aria-label="맨 위로 이동"
+          className="flex flex-col items-center gap-1 border-t border-line bg-navy py-3.5 text-ivory transition-colors duration-300 hover:bg-navy-soft"
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
+            <path
+              d="M12 5v14M6 11l6-6 6 6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="text-[0.6rem] font-bold leading-none tracking-[0.16em]">
+            TOP
+          </span>
+        </button>
+      </div>
     </div>
   )
 }

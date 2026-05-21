@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PageHero from '../components/PageHero'
+import { supabase } from '../lib/supabase'
 
 const CONTACT_EMAIL = 'contact@onetime.co.kr'
 const ERR = '#cf4b3e'
@@ -114,13 +115,15 @@ export default function Contact() {
   const [agree, setAgree] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<ErrKey, string>>>({})
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const set = (key: keyof Values, val: string) => {
     setValues((v) => ({ ...v, [key]: val }))
     if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const next: Partial<Record<ErrKey, string>> = {}
     if (!values.name.trim()) next.name = '이름을 입력해 주세요.'
@@ -142,16 +145,20 @@ export default function Contact() {
       return
     }
 
-    const body =
-      `[원타임 그룹 상담 문의]\n\n` +
-      `· 이름: ${values.name}\n` +
-      `· 연락처: ${values.phone}\n` +
-      `· 이메일: ${values.email || '-'}\n` +
-      `· 문의 유형: ${values.type}\n\n` +
-      `· 문의 내용\n${values.message}\n`
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-      `[원타임 상담문의] ${values.name} 님`,
-    )}&body=${encodeURIComponent(body)}`
+    setSubmitError('')
+    setSending(true)
+    const { error } = await supabase.from('inquiries').insert({
+      name: values.name.trim(),
+      phone: values.phone.trim(),
+      email: values.email.trim() || null,
+      type: values.type,
+      message: values.message.trim(),
+    })
+    setSending(false)
+    if (error) {
+      setSubmitError('전송에 실패했습니다. 잠시 후 다시 시도해 주세요.')
+      return
+    }
 
     setSent(true)
     setValues({ name: '', phone: '', email: '', type: TYPES[0], message: '' })
@@ -250,15 +257,8 @@ export default function Contact() {
                       ✓
                     </span>
                     <span>
-                      문의 내용이 메일 작성 창으로 전달되었습니다. 메일 앱이
-                      열리지 않으면{' '}
-                      <a
-                        href={`mailto:${CONTACT_EMAIL}`}
-                        className="font-semibold text-gold-deep underline underline-offset-2"
-                      >
-                        {CONTACT_EMAIL}
-                      </a>{' '}
-                      으로 보내주세요.
+                      문의가 정상적으로 접수되었습니다. 원타임 그룹 전문
+                      컨설턴트가 빠르게 연락드리겠습니다.
                     </span>
                   </div>
                 )}
@@ -446,12 +446,21 @@ export default function Contact() {
                     )}
                   </div>
 
+                  {submitError && (
+                    <p
+                      className="text-[0.84rem] font-medium"
+                      style={{ color: ERR }}
+                    >
+                      {submitError}
+                    </p>
+                  )}
                   <button
                     type="submit"
-                    className="btn-gold mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl py-4 text-[0.98rem] font-bold tracking-[0.02em] transition-transform duration-300 hover:-translate-y-0.5"
+                    disabled={sending}
+                    className="btn-gold mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl py-4 text-[0.98rem] font-bold tracking-[0.02em] transition-transform duration-300 hover:-translate-y-0.5 disabled:opacity-60"
                   >
-                    상담 문의 보내기
-                    <span aria-hidden>→</span>
+                    {sending ? '전송 중…' : '상담 문의 보내기'}
+                    {!sending && <span aria-hidden>→</span>}
                   </button>
                 </form>
               </div>

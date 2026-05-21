@@ -1,15 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, DB_SCHEMA } from './publicEnv'
 
-/**
- * Self-hosted Supabase — backend for the NEWS & INSIGHT content space.
- * The anon key is public by design (row-level security gates all access).
- */
-const SUPABASE_URL = 'https://api.hsweb.pics'
-const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNjQxNzY5MjAwLCJleHAiOjE3OTk1MzU2MDB9.pei5Gx1wqEkbcDs1CiHFuTWNuVRlcrG5dPmYdrAqDdY'
-
+// Self-hosted Supabase — backend for NEWS & INSIGHT, inquiries, and settings.
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  db: { schema: 'onetime_invest' },
+  db: { schema: DB_SCHEMA },
   auth: { persistSession: true, autoRefreshToken: true },
 })
 
@@ -18,7 +12,7 @@ export const ADMIN_EMAIL = 'cms@onetime-invest.app'
 
 export const NEWS_BUCKET = 'news'
 
-export const NEWS_CATEGORIES = ['경제뉴스', '금융이슈', '시장시황'] as const
+export const NEWS_CATEGORIES = ['경제뉴스', '시장시황', '수익내역'] as const
 export type NewsCategory = (typeof NEWS_CATEGORIES)[number]
 
 export type NewsPost = {
@@ -34,4 +28,25 @@ export type NewsPost = {
 /** Public URL of an uploaded thumbnail in the news storage bucket. */
 export function newsImageUrl(path: string) {
   return supabase.storage.from(NEWS_BUCKET).getPublicUrl(path).data.publicUrl
+}
+
+/** A consultation request submitted through the Contact form. */
+export type Inquiry = {
+  id: string
+  name: string
+  phone: string
+  email: string | null
+  type: string | null
+  message: string
+  created_at: string
+}
+
+/** Loads editable site settings (e.g. kakao_url, blog_url) as a key→value map. */
+export async function loadSettings(): Promise<Record<string, string>> {
+  const { data } = await supabase.from('settings').select('key, value')
+  const map: Record<string, string> = {}
+  for (const row of (data as { key: string; value: string }[] | null) ?? []) {
+    map[row.key] = row.value
+  }
+  return map
 }

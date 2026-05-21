@@ -4,15 +4,25 @@ import {
   ADMIN_EMAIL,
   NEWS_BUCKET,
   NEWS_CATEGORIES,
+  loadSettings,
   type NewsPost,
+  type Inquiry,
 } from '../lib/supabase'
 
 const ERR = '#cf4b3e'
+const FIELD =
+  'w-full rounded-xl border border-line bg-[#f7f6f2] px-4 py-3 text-[0.95rem] text-ink outline-none transition-colors focus:border-gold focus:bg-white'
 
 function fmtDate(iso: string) {
   const d = new Date(iso)
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(
     d.getDate(),
+  ).padStart(2, '0')}`
+}
+function fmtDateTime(iso: string) {
+  const d = new Date(iso)
+  return `${fmtDate(iso)} ${String(d.getHours()).padStart(2, '0')}:${String(
+    d.getMinutes(),
   ).padStart(2, '0')}`
 }
 
@@ -44,10 +54,10 @@ function Login({ onDone }: { onDone: () => void }) {
         <div className="text-center">
           <p className="eyebrow eyebrow--center">Admin</p>
           <h1 className="display-kr mt-5 text-[1.8rem] text-navy">
-            콘텐츠 관리자
+            원타임 관리자
           </h1>
           <p className="mt-2 text-[0.9rem] text-muted">
-            NEWS &amp; INSIGHT 글을 관리합니다.
+            콘텐츠와 문의 내역을 관리합니다.
           </p>
         </div>
         <form
@@ -67,7 +77,7 @@ function Login({ onDone }: { onDone: () => void }) {
             onChange={(e) => setPw(e.target.value)}
             placeholder="••••"
             autoFocus
-            className="w-full rounded-xl border border-line bg-[#f7f6f2] px-4 py-3 text-[0.95rem] text-ink outline-none transition-colors focus:border-gold focus:bg-white"
+            className={FIELD}
           />
           {error && (
             <p className="mt-2 text-[0.8rem]" style={{ color: ERR }}>
@@ -87,16 +97,15 @@ function Login({ onDone }: { onDone: () => void }) {
   )
 }
 
-/* ──────────────────────── dashboard ─────────────────────── */
-function Dashboard({ onLogout }: { onLogout: () => void }) {
+/* ─────────────────────── news panel ─────────────────────── */
+function NewsPanel() {
   const [posts, setPosts] = useState<NewsPost[]>([])
   const [loading, setLoading] = useState(true)
-
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState<string>(NEWS_CATEGORIES[0])
   const [body, setBody] = useState('')
   const [file, setFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string>('')
+  const [preview, setPreview] = useState('')
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(
     null,
@@ -120,14 +129,6 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     const f = e.target.files?.[0] ?? null
     setFile(f)
     setPreview(f ? URL.createObjectURL(f) : '')
-  }
-
-  const resetForm = () => {
-    setTitle('')
-    setCategory(NEWS_CATEGORIES[0])
-    setBody('')
-    setFile(null)
-    setPreview('')
   }
 
   const submit = async (e: React.FormEvent) => {
@@ -158,7 +159,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         thumbnail_url,
       })
       if (insErr) throw insErr
-      resetForm()
+      setTitle('')
+      setCategory(NEWS_CATEGORIES[0])
+      setBody('')
+      setFile(null)
+      setPreview('')
       setMsg({ kind: 'ok', text: '게시글이 등록되었습니다.' })
       loadPosts()
     } catch {
@@ -174,30 +179,374 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       const marker = `/${NEWS_BUCKET}/`
       const idx = post.thumbnail_url.indexOf(marker)
       if (idx >= 0) {
-        const path = post.thumbnail_url.slice(idx + marker.length)
-        await supabase.storage.from(NEWS_BUCKET).remove([path])
+        await supabase.storage
+          .from(NEWS_BUCKET)
+          .remove([post.thumbnail_url.slice(idx + marker.length)])
       }
     }
     await supabase.from('news_posts').delete().eq('id', post.id)
     loadPosts()
   }
 
+  return (
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
+      {/* form */}
+      <form onSubmit={submit} className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
+        <div className="rounded-2xl border border-line bg-white p-7 shadow-[0_30px_70px_-54px_rgba(12,28,54,0.5)]">
+          <h2 className="display-kr text-[1.3rem] text-navy">새 글 작성</h2>
+          <div className="mt-5 space-y-4">
+            <div>
+              <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
+                제목 <span className="text-gold-deep">*</span>
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="기사 제목"
+                className={FIELD}
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
+                카테고리
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className={FIELD + ' cursor-pointer'}
+              >
+                {NEWS_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
+                본문 <span className="text-gold-deep">*</span>
+              </label>
+              <textarea
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                rows={9}
+                placeholder="내용을 입력하세요. 줄바꿈은 그대로 반영됩니다."
+                className={FIELD + ' resize-y'}
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
+                대표 이미지
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={pickFile}
+                className="block w-full text-[0.84rem] text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-navy file:px-4 file:py-2 file:text-[0.82rem] file:font-semibold file:text-ivory hover:file:bg-navy-soft"
+              />
+              {preview && (
+                <img
+                  src={preview}
+                  alt=""
+                  className="mt-3 aspect-[16/10] w-full rounded-xl border border-line object-cover"
+                />
+              )}
+            </div>
+          </div>
+          {msg && (
+            <p
+              className="mt-4 text-[0.84rem] font-medium"
+              style={{ color: msg.kind === 'ok' ? '#1f7a4d' : ERR }}
+            >
+              {msg.text}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={saving}
+            className="btn-gold mt-5 inline-flex w-full items-center justify-center rounded-xl py-3.5 text-[0.96rem] font-bold disabled:opacity-50"
+          >
+            {saving ? '등록 중…' : '게시글 등록'}
+          </button>
+        </div>
+      </form>
+
+      {/* list */}
+      <div className="lg:col-span-7">
+        <div className="flex items-baseline justify-between">
+          <h2 className="display-kr text-[1.3rem] text-navy">등록된 글</h2>
+          <span className="text-[0.85rem] text-muted">총 {posts.length}건</span>
+        </div>
+        {loading ? (
+          <p className="mt-8 text-[0.92rem] text-muted">불러오는 중…</p>
+        ) : posts.length === 0 ? (
+          <p className="mt-8 text-[0.92rem] text-muted">
+            아직 등록된 글이 없습니다.
+          </p>
+        ) : (
+          <ul className="mt-5 space-y-3">
+            {posts.map((p) => (
+              <li
+                key={p.id}
+                className="flex items-center gap-4 rounded-xl border border-line bg-white p-3.5"
+              >
+                <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-navy">
+                  {p.thumbnail_url ? (
+                    <img
+                      src={p.thumbnail_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="grid-lines h-full w-full" aria-hidden />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[0.7rem] font-bold tracking-[0.04em] text-gold-deep">
+                    {p.category}
+                  </span>
+                  <p className="truncate text-[0.96rem] font-semibold text-navy">
+                    {p.title}
+                  </p>
+                  <p className="text-[0.78rem] text-muted">
+                    {fmtDate(p.created_at)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => remove(p)}
+                  className="shrink-0 rounded-lg border border-line px-3 py-2 text-[0.8rem] font-semibold text-ink-soft transition-colors duration-300 hover:border-[#cf4b3e] hover:text-[#cf4b3e]"
+                >
+                  삭제
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ──────────────────── inquiries panel ───────────────────── */
+function InquiriesPanel() {
+  const [items, setItems] = useState<Inquiry[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    const { data } = await supabase
+      .from('inquiries')
+      .select('*')
+      .order('created_at', { ascending: false })
+    setItems((data as Inquiry[]) ?? [])
+    setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const remove = async (id: string) => {
+    if (!window.confirm('이 문의를 삭제할까요?')) return
+    await supabase.from('inquiries').delete().eq('id', id)
+    load()
+  }
+
+  if (loading) {
+    return <p className="text-[0.92rem] text-muted">불러오는 중…</p>
+  }
+  if (items.length === 0) {
+    return (
+      <p className="text-[0.92rem] text-muted">접수된 문의가 없습니다.</p>
+    )
+  }
+
+  return (
+    <div>
+      <p className="text-[0.85rem] text-muted">총 {items.length}건의 문의</p>
+      <ul className="mt-5 space-y-4">
+        {items.map((q) => (
+          <li
+            key={q.id}
+            className="rounded-2xl border border-line bg-white p-6 shadow-[0_24px_56px_-50px_rgba(12,28,54,0.5)]"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="display-kr text-[1.15rem] text-navy">
+                  {q.name}
+                </span>
+                {q.type && (
+                  <span className="rounded-full bg-navy/[0.06] px-3 py-1 text-[0.74rem] font-semibold text-ink-soft">
+                    {q.type}
+                  </span>
+                )}
+              </div>
+              <span className="text-[0.8rem] text-muted">
+                {fmtDateTime(q.created_at)}
+              </span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[0.88rem] text-ink-soft">
+              <span>
+                <span className="text-muted">연락처</span>{' '}
+                <a
+                  href={`tel:${q.phone}`}
+                  className="font-semibold text-navy hover:text-gold-deep"
+                >
+                  {q.phone}
+                </a>
+              </span>
+              {q.email && (
+                <span>
+                  <span className="text-muted">이메일</span>{' '}
+                  <a
+                    href={`mailto:${q.email}`}
+                    className="font-semibold text-navy hover:text-gold-deep"
+                  >
+                    {q.email}
+                  </a>
+                </span>
+              )}
+            </div>
+            <p className="mt-4 whitespace-pre-wrap rounded-xl bg-[#f7f6f2] px-4 py-3.5 text-[0.92rem] leading-[1.8] text-ink-soft">
+              {q.message}
+            </p>
+            <div className="mt-4 text-right">
+              <button
+                type="button"
+                onClick={() => remove(q.id)}
+                className="rounded-lg border border-line px-3.5 py-2 text-[0.8rem] font-semibold text-ink-soft transition-colors duration-300 hover:border-[#cf4b3e] hover:text-[#cf4b3e]"
+              >
+                삭제
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+/* ──────────────────── settings panel ────────────────────── */
+function SettingsPanel() {
+  const [kakao, setKakao] = useState('')
+  const [blog, setBlog] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(
+    null,
+  )
+
+  useEffect(() => {
+    loadSettings()
+      .then((s) => {
+        setKakao(s.kakao_url || '')
+        setBlog(s.blog_url || '')
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    setMsg(null)
+    const { error } = await supabase.from('settings').upsert([
+      { key: 'kakao_url', value: kakao.trim() },
+      { key: 'blog_url', value: blog.trim() },
+    ])
+    setSaving(false)
+    setMsg(
+      error
+        ? { kind: 'err', text: '저장에 실패했습니다.' }
+        : { kind: 'ok', text: '저장되었습니다. 우측 퀵메뉴에 바로 반영됩니다.' },
+    )
+  }
+
+  if (loading) {
+    return <p className="text-[0.92rem] text-muted">불러오는 중…</p>
+  }
+
+  return (
+    <form onSubmit={save} className="max-w-[540px]">
+      <div className="rounded-2xl border border-line bg-white p-7 shadow-[0_30px_70px_-54px_rgba(12,28,54,0.5)]">
+        <h2 className="display-kr text-[1.3rem] text-navy">
+          퀵메뉴 링크 설정
+        </h2>
+        <p className="mt-2 text-[0.88rem] leading-[1.7] text-muted">
+          화면 우측 퀵메뉴의 카톡상담·블로그 버튼이 연결될 주소입니다.
+        </p>
+        <div className="mt-6 space-y-4">
+          <div>
+            <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
+              카카오톡 채널 URL
+            </label>
+            <input
+              type="url"
+              value={kakao}
+              onChange={(e) => setKakao(e.target.value)}
+              placeholder="https://pf.kakao.com/_xxxxx"
+              className={FIELD}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
+              블로그 URL
+            </label>
+            <input
+              type="url"
+              value={blog}
+              onChange={(e) => setBlog(e.target.value)}
+              placeholder="https://blog.naver.com/xxxxx"
+              className={FIELD}
+            />
+          </div>
+        </div>
+        {msg && (
+          <p
+            className="mt-4 text-[0.84rem] font-medium"
+            style={{ color: msg.kind === 'ok' ? '#1f7a4d' : ERR }}
+          >
+            {msg.text}
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={saving}
+          className="btn-gold mt-5 inline-flex w-full items-center justify-center rounded-xl py-3.5 text-[0.96rem] font-bold disabled:opacity-50"
+        >
+          {saving ? '저장 중…' : '저장'}
+        </button>
+      </div>
+    </form>
+  )
+}
+
+/* ──────────────────────── dashboard ─────────────────────── */
+const TABS = [
+  { id: 'news', label: '콘텐츠' },
+  { id: 'inquiries', label: '문의 내역' },
+  { id: 'settings', label: '링크 설정' },
+] as const
+type TabId = (typeof TABS)[number]['id']
+
+function Dashboard({ onLogout }: { onLogout: () => void }) {
+  const [tab, setTab] = useState<TabId>('news')
+
   const logout = async () => {
     await supabase.auth.signOut()
     onLogout()
   }
-
-  const field =
-    'w-full rounded-xl border border-line bg-[#f7f6f2] px-4 py-3 text-[0.95rem] text-ink outline-none transition-colors focus:border-gold focus:bg-white'
 
   return (
     <section className="bg-white pb-24 pt-[120px] sm:pt-[140px]">
       <div className="mx-auto max-w-[1100px] px-5 sm:px-8">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="eyebrow">Admin · 콘텐츠 관리</p>
+            <p className="eyebrow">Admin · 관리자</p>
             <h1 className="display-kr mt-4 text-[clamp(1.8rem,3vw,2.4rem)] text-navy">
-              NEWS &amp; INSIGHT 관리
+              원타임 관리자
             </h1>
           </div>
           <button
@@ -209,156 +558,28 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           </button>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
-          {/* new post form */}
-          <form
-            onSubmit={submit}
-            className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start"
-          >
-            <div className="rounded-2xl border border-line bg-white p-7 shadow-[0_30px_70px_-54px_rgba(12,28,54,0.5)]">
-              <h2 className="display-kr text-[1.3rem] text-navy">새 글 작성</h2>
-
-              <div className="mt-5 space-y-4">
-                <div>
-                  <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
-                    제목 <span className="text-gold-deep">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="기사 제목"
-                    className={field}
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
-                    카테고리
-                  </label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className={field + ' cursor-pointer'}
-                  >
-                    {NEWS_CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
-                    본문 <span className="text-gold-deep">*</span>
-                  </label>
-                  <textarea
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    rows={9}
-                    placeholder="내용을 입력하세요. 줄바꿈은 그대로 반영됩니다."
-                    className={field + ' resize-y'}
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
-                    대표 이미지
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={pickFile}
-                    className="block w-full text-[0.84rem] text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-navy file:px-4 file:py-2 file:text-[0.82rem] file:font-semibold file:text-ivory hover:file:bg-navy-soft"
-                  />
-                  {preview && (
-                    <img
-                      src={preview}
-                      alt=""
-                      className="mt-3 aspect-[16/10] w-full rounded-xl border border-line object-cover"
-                    />
-                  )}
-                </div>
-              </div>
-
-              {msg && (
-                <p
-                  className="mt-4 text-[0.84rem] font-medium"
-                  style={{ color: msg.kind === 'ok' ? '#1f7a4d' : ERR }}
-                >
-                  {msg.text}
-                </p>
+        <div className="mt-8 flex gap-1 border-b border-line">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`relative -mb-px px-5 py-3 text-[0.94rem] font-semibold transition-colors duration-200 ${
+                tab === t.id ? 'text-navy' : 'text-muted hover:text-navy'
+              }`}
+            >
+              {t.label}
+              {tab === t.id && (
+                <span className="absolute inset-x-0 -bottom-px h-0.5 bg-gold" />
               )}
+            </button>
+          ))}
+        </div>
 
-              <button
-                type="submit"
-                disabled={saving}
-                className="btn-gold mt-5 inline-flex w-full items-center justify-center rounded-xl py-3.5 text-[0.96rem] font-bold disabled:opacity-50"
-              >
-                {saving ? '등록 중…' : '게시글 등록'}
-              </button>
-            </div>
-          </form>
-
-          {/* existing posts */}
-          <div className="lg:col-span-7">
-            <div className="flex items-baseline justify-between">
-              <h2 className="display-kr text-[1.3rem] text-navy">
-                등록된 글
-              </h2>
-              <span className="text-[0.85rem] text-muted">
-                총 {posts.length}건
-              </span>
-            </div>
-
-            {loading ? (
-              <p className="mt-8 text-[0.92rem] text-muted">불러오는 중…</p>
-            ) : posts.length === 0 ? (
-              <p className="mt-8 text-[0.92rem] text-muted">
-                아직 등록된 글이 없습니다.
-              </p>
-            ) : (
-              <ul className="mt-5 space-y-3">
-                {posts.map((p) => (
-                  <li
-                    key={p.id}
-                    className="flex items-center gap-4 rounded-xl border border-line bg-white p-3.5"
-                  >
-                    <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-navy">
-                      {p.thumbnail_url ? (
-                        <img
-                          src={p.thumbnail_url}
-                          alt=""
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="grid-lines h-full w-full" aria-hidden />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-[0.7rem] font-bold tracking-[0.04em] text-gold-deep">
-                        {p.category}
-                      </span>
-                      <p className="truncate text-[0.96rem] font-semibold text-navy">
-                        {p.title}
-                      </p>
-                      <p className="text-[0.78rem] text-muted">
-                        {fmtDate(p.created_at)}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => remove(p)}
-                      className="shrink-0 rounded-lg border border-line px-3 py-2 text-[0.8rem] font-semibold text-ink-soft transition-colors duration-300 hover:border-[#cf4b3e] hover:text-[#cf4b3e]"
-                    >
-                      삭제
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+        <div className="mt-10">
+          {tab === 'news' && <NewsPanel />}
+          {tab === 'inquiries' && <InquiriesPanel />}
+          {tab === 'settings' && <SettingsPanel />}
         </div>
       </div>
     </section>

@@ -9,10 +9,10 @@ import Home from './pages/Home'
 import About from './pages/About'
 import Services from './pages/Services'
 import Process from './pages/Process'
-import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 
 // supabase-backed routes — lazy-loaded so the marketing pages stay lightweight
+const Contact = lazy(() => import('./pages/Contact'))
 const News = lazy(() => import('./pages/News'))
 const NewsDetail = lazy(() => import('./pages/NewsDetail'))
 const Admin = lazy(() => import('./pages/Admin'))
