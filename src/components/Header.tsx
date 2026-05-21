@@ -117,9 +117,9 @@ export default function Header() {
           <div className="flex items-center gap-3">
             <Link
               to="/contact"
-              className="btn-gold hidden rounded-full px-6 py-3 text-[0.9rem] font-semibold tracking-[0.02em] transition-transform duration-300 hover:-translate-y-0.5 lg:inline-flex"
+              className="btn-gold hidden rounded-full px-6 py-3 text-[0.9rem] font-semibold tracking-[0.04em] transition-transform duration-300 hover:-translate-y-0.5 lg:inline-flex"
             >
-              상담 문의
+              Contact
             </Link>
 
             <button
@@ -191,9 +191,9 @@ export default function Header() {
           <Link
             to="/contact"
             onClick={() => setOpen(false)}
-            className="btn-gold mt-8 inline-flex w-full items-center justify-center rounded-full py-4 text-base font-semibold"
+            className="btn-gold mt-8 inline-flex w-full items-center justify-center rounded-full py-4 text-base font-semibold tracking-[0.04em]"
           >
-            상담 문의하기
+            Contact
           </Link>
         </nav>
 
