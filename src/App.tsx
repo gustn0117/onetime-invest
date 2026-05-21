@@ -4,6 +4,7 @@ import { useScrollReveal } from './hooks/useScrollReveal'
 import ScrollToTop from './components/ScrollToTop'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import QuickDock from './components/QuickDock'
 import Home from './pages/Home'
 import About from './pages/About'
 import Services from './pages/Services'
@@ -49,6 +50,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <QuickDock />
     </>
   )
 }
