@@ -5,6 +5,7 @@ const NAV = [
   { to: '/about', label: 'About' },
   { to: '/services', label: 'Services' },
   { to: '/process', label: 'Process' },
+  { to: '/news', label: 'News & Insight' },
 ] as const
 
 function Brandmark({

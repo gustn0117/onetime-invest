@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { useScrollReveal } from './hooks/useScrollReveal'
 import ScrollToTop from './components/ScrollToTop'
@@ -11,6 +11,11 @@ import Services from './pages/Services'
 import Process from './pages/Process'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
+
+// supabase-backed routes — lazy-loaded so the marketing pages stay lightweight
+const News = lazy(() => import('./pages/News'))
+const NewsDetail = lazy(() => import('./pages/NewsDetail'))
+const Admin = lazy(() => import('./pages/Admin'))
 
 const TITLES: Record<string, string> = {
   '/': '원타임 그룹 | ONE TIME INVEST COMPANY — 한 번의 기회가 미래를 바꿉니다',
@@ -25,8 +30,14 @@ function App() {
   useScrollReveal(location.pathname)
 
   useEffect(() => {
+    const p = location.pathname
     document.title =
-      TITLES[location.pathname] ?? '페이지를 찾을 수 없습니다 | 원타임 그룹'
+      TITLES[p] ??
+      (p.startsWith('/news')
+        ? 'NEWS & INSIGHT | 원타임 그룹'
+        : p === '/admin'
+          ? '콘텐츠 관리자 | 원타임 그룹'
+          : '페이지를 찾을 수 없습니다 | 원타임 그룹')
   }, [location.pathname])
 
   return (
@@ -40,14 +51,19 @@ function App() {
       <ScrollToTop />
       <Header />
       <main id="main">
-        <Routes>
-          <Route path="/" element={<Home />} />
+        <Suspense fallback={<div className="min-h-[70vh]" />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           <Route path="/process" element={<Process />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+          <Route path="/news" element={<News />} />
+          <Route path="/news/:id" element={<NewsDetail />} />
+          <Route path="/admin" element={<Admin />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
       <Footer />
       <QuickDock />

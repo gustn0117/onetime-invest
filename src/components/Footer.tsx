@@ -5,6 +5,7 @@ const QUICK = [
   { to: '/about', label: '회사소개' },
   { to: '/services', label: '사업영역' },
   { to: '/process', label: '프로세스' },
+  { to: '/news', label: 'NEWS & INSIGHT' },
   { to: '/contact', label: '상담 문의' },
 ]
 
