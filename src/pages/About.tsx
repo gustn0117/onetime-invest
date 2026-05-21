@@ -174,27 +174,31 @@ function Greeting() {
             >
               <div className="relative overflow-hidden rounded-2xl bg-navy p-2.5">
                 <div className="grid-lines absolute inset-0" aria-hidden />
-                <div className="relative flex flex-col items-center rounded-xl border border-gold/25 px-7 py-12 text-center">
-                  <img
-                    src="/onetime-mark-light.png"
-                    alt=""
-                    className="h-16 w-auto"
-                  />
-                  <p className="mt-8 font-sans text-[0.68rem] font-semibold tracking-[0.36em] text-gold-soft">
-                    CEO · 대표이사
-                  </p>
-                  <p className="display mt-3 text-[2.7rem] leading-none text-ivory">
-                    권성수
-                  </p>
-                  <div className="mt-7 h-px w-14 bg-gold/55" />
-                  <p className="mt-7 text-[0.9rem] leading-[1.85] text-ivory/65">
-                    “한 번의 기회가
-                    <br />
-                    미래를 바꿉니다.”
-                  </p>
-                  <p className="mt-6 font-sans text-[0.62rem] font-semibold tracking-[0.3em] text-ivory/40">
-                    ONE TIME INVEST COMPANY
-                  </p>
+                <div className="relative rounded-xl border border-gold/25 p-5">
+                  <div className="overflow-hidden rounded-lg">
+                    <img
+                      src="/ceo-portrait.jpg"
+                      alt="원타임 그룹 대표이사 권성수"
+                      className="aspect-[3/4] w-full object-cover object-top"
+                    />
+                  </div>
+                  <div className="mt-6 text-center">
+                    <p className="font-sans text-[0.68rem] font-semibold tracking-[0.36em] text-gold-soft">
+                      CEO · 대표이사
+                    </p>
+                    <p className="display mt-2.5 text-[2.5rem] leading-none text-ivory">
+                      권성수
+                    </p>
+                    <div className="mx-auto mt-6 h-px w-14 bg-gold/55" />
+                    <p className="mt-6 text-[0.9rem] leading-[1.85] text-ivory/65">
+                      “한 번의 기회가
+                      <br />
+                      미래를 바꿉니다.”
+                    </p>
+                    <p className="mt-5 font-sans text-[0.62rem] font-semibold tracking-[0.3em] text-ivory/40">
+                      ONE TIME INVEST COMPANY
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

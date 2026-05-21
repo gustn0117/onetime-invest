@@ -4,6 +4,13 @@ import { HIGHLIGHTS, SERVICES } from '../data'
 
 const PRINCIPLES = ['정확한 분석', '책임 있는 의사결정', '고객과의 신뢰']
 
+const STATS = [
+  { value: '4,865명', label: '유치회원' },
+  { value: '186억', label: '거래소 누적투자금' },
+  { value: '84%', label: '전년도 누적수익률' },
+  { value: '23.4%', label: '월 평균 수익률' },
+]
+
 function Hero() {
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-navy pt-[72px] sm:pt-[88px]">
@@ -23,8 +30,8 @@ function Hero() {
         aria-hidden
       />
 
-      <div className="relative mx-auto w-full max-w-[1280px] px-5 py-24 sm:px-8">
-        <div className="max-w-[46rem]">
+      <div className="relative mx-auto grid w-full max-w-[1280px] grid-cols-1 items-center gap-x-8 gap-y-14 px-5 py-24 sm:px-8 lg:grid-cols-12">
+        <div className="lg:col-span-7">
           <p className="eyebrow text-gold-soft" data-reveal="fade">
             ONE TIME INVEST COMPANY
           </p>
@@ -91,6 +98,33 @@ function Hero() {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div
+          className="lg:col-span-5"
+          data-reveal="right"
+          style={{ '--reveal-delay': '300ms' } as React.CSSProperties}
+        >
+          <div className="rounded-2xl border border-ivory/15 bg-ivory/[0.07] p-7 backdrop-blur-md sm:p-9">
+            <p className="font-sans text-[0.72rem] font-bold tracking-[0.24em] text-gold-soft">
+              ONE TIME PERFORMANCE
+            </p>
+            <p className="display-kr mt-2.5 text-[1.2rem] text-ivory">
+              숫자로 증명하는 신뢰
+            </p>
+            <div className="mt-7 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-ivory/12 pt-8">
+              {STATS.map((s) => (
+                <div key={s.label}>
+                  <p className="display text-[clamp(1.7rem,2.7vw,2.35rem)] leading-none text-gold-soft">
+                    {s.value}
+                  </p>
+                  <p className="mt-2 text-[0.86rem] leading-snug text-ivory/65">
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
