@@ -5,6 +5,9 @@ import { HIGHLIGHTS, SERVICES } from '../data'
 
 const PRINCIPLES = ['정확한 분석', '책임 있는 의사결정', '고객과의 신뢰']
 
+// hero footage grade — warms the dusk shot and trims its cool/blue cast
+const HERO_VIDEO_FILTER = 'brightness(1.07) saturate(1.12) sepia(0.3)'
+
 const STATS = [
   { value: '4,865명', label: '유치회원' },
   { value: '186억', label: '거래소 누적투자금' },
@@ -35,12 +38,14 @@ function Hero() {
           src="/hero-poster.jpg"
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
+          style={{ filter: HERO_VIDEO_FILTER }}
           fetchPriority="high"
         />
       ) : (
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
+          style={{ filter: HERO_VIDEO_FILTER }}
           src="/hero.mp4"
           poster="/hero-poster.jpg"
           autoPlay
@@ -52,7 +57,7 @@ function Hero() {
         />
       )}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/74 to-black/46"
+        className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/62 to-black/34"
         aria-hidden
       />
       <div className="grid-lines absolute inset-0 opacity-70" aria-hidden />
