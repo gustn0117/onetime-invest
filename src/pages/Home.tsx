@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import MarketOverview from '../components/MarketOverview'
 import { HIGHLIGHTS, SERVICES } from '../data'
@@ -12,14 +13,44 @@ const STATS = [
 ]
 
 function Hero() {
+  const [reduceMotion] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = true
+    const played = v.play()
+    if (played) played.catch(() => {})
+  }, [])
+
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-navy pt-[72px] sm:pt-[88px]">
-      <img
-        src="/photo-skyline.jpg"
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover"
-        fetchPriority="high"
-      />
+      {reduceMotion ? (
+        <img
+          src="/hero-poster.jpg"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          fetchPriority="high"
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          src="/hero.mp4"
+          poster="/hero-poster.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        />
+      )}
       <div
         className="absolute inset-0 bg-gradient-to-br from-navy-deep/94 via-navy/82 to-navy/55"
         aria-hidden
