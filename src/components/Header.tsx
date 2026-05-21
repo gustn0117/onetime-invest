@@ -115,23 +115,17 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <div className="hidden text-right xl:block">
+            <div className="hidden text-right leading-tight xl:block">
               <p
-                className={`text-[0.58rem] font-semibold uppercase tracking-[0.3em] ${
+                className={`text-[0.55rem] font-semibold uppercase tracking-[0.24em] ${
                   scrolled ? 'text-gold-deep' : 'text-gold-soft'
                 }`}
               >
                 Membership&nbsp;Desk
               </p>
-              <span
-                className={`mt-2 ml-auto block h-px w-7 ${
-                  scrolled ? 'bg-gold/45' : 'bg-gold-soft/50'
-                }`}
-                aria-hidden
-              />
               <a
                 href="tel:070-4633-5330"
-                className={`mt-2.5 block text-[0.95rem] font-semibold tracking-[0.13em] transition-colors duration-300 ${
+                className={`mt-1.5 block text-[0.84rem] font-semibold tracking-[0.01em] transition-colors duration-300 ${
                   scrolled
                     ? 'text-navy hover:text-gold-deep'
                     : 'text-ivory hover:text-gold-soft'
@@ -141,7 +135,7 @@ export default function Header() {
               </a>
               <a
                 href="mailto:onetimeinvest1@gmail.com"
-                className={`mt-1 block text-[0.68rem] tracking-[0.08em] transition-colors duration-300 ${
+                className={`mt-1 block text-[0.66rem] transition-colors duration-300 ${
                   scrolled
                     ? 'text-muted hover:text-gold-deep'
                     : 'text-ivory/55 hover:text-gold-soft'

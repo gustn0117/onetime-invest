@@ -40,13 +40,7 @@ function PhoneIcon() {
 const ITEMS = [
   { key: 'kakao', label: '카톡상담', href: KAKAO_URL, icon: <TalkIcon />, external: true },
   { key: 'blog', label: '블로그', href: BLOG_URL, icon: <BlogIcon />, external: true },
-  {
-    key: 'tel',
-    label: '전화상담',
-    href: `tel:${PHONE}`,
-    icon: <PhoneIcon />,
-    sub: PHONE,
-  },
+  { key: 'tel', label: '전화상담', href: `tel:${PHONE}`, icon: <PhoneIcon />, external: false },
 ]
 
 /** Fixed right-edge quick-contact dock (KakaoTalk · Blog · Phone · scroll-to-top). */
@@ -73,14 +67,9 @@ export default function QuickDock() {
             <span className="text-navy transition-colors duration-300 group-hover:text-gold-deep">
               {it.icon}
             </span>
-            <span className="text-[0.63rem] font-semibold tracking-[0.02em] text-ink-soft">
+            <span className="text-[0.64rem] font-semibold leading-none tracking-[0.02em] text-ink-soft">
               {it.label}
             </span>
-            {it.sub && (
-              <span className="text-[0.55rem] font-medium tracking-[-0.01em] text-muted">
-                {it.sub}
-              </span>
-            )}
           </a>
         ))}
       </div>
