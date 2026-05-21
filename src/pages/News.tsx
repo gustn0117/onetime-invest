@@ -57,20 +57,21 @@ export default function News() {
 
   useEffect(() => {
     let alive = true
-    supabase
-      .from('news_posts')
-      .select('*')
-      .eq('published', true)
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
+    ;(async () => {
+      try {
+        const { data, error } = await supabase
+          .from('news_posts')
+          .select('*')
+          .eq('published', true)
+          .order('created_at', { ascending: false })
         if (!alive) return
-        if (error) {
-          setState('error')
-          return
-        }
+        if (error) throw error
         setPosts((data as NewsPost[]) ?? [])
         setState('ready')
-      })
+      } catch {
+        if (alive) setState('error')
+      }
+    })()
     return () => {
       alive = false
     }

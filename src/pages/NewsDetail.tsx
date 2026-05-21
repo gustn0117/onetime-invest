@@ -20,12 +20,13 @@ export default function NewsDetail() {
       setState('missing')
       return
     }
-    supabase
-      .from('news_posts')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle()
-      .then(({ data, error }) => {
+    ;(async () => {
+      try {
+        const { data, error } = await supabase
+          .from('news_posts')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle()
         if (!alive) return
         if (error || !data) {
           setState('missing')
@@ -33,7 +34,10 @@ export default function NewsDetail() {
         }
         setPost(data as NewsPost)
         setState('ready')
-      })
+      } catch {
+        if (alive) setState('missing')
+      }
+    })()
     return () => {
       alive = false
     }
