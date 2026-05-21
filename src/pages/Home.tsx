@@ -227,6 +227,94 @@ function Intro() {
   )
 }
 
+function CeoMessage() {
+  return (
+    <section className="border-t border-line bg-white py-24 sm:py-32">
+      <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-5" data-reveal="left">
+          <div className="relative mx-auto max-w-[400px] lg:mx-0">
+            <div
+              className="absolute -bottom-5 -right-5 hidden h-full w-full rounded-2xl border border-gold/30 sm:block"
+              aria-hidden
+            />
+            <div className="relative overflow-hidden rounded-2xl border border-line bg-white shadow-[0_36px_80px_-46px_rgba(12,28,54,0.5)]">
+              <img
+                src="/ceo-portrait.jpg"
+                alt="원타임 그룹 대표이사 권성수"
+                loading="lazy"
+                className="aspect-[4/5] w-full object-cover object-top"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-7">
+          <p className="eyebrow" data-reveal="fade">
+            CEO Message · 대표 인사말
+          </p>
+          <h2
+            className="display-kr mt-6 text-[clamp(1.85rem,3.4vw,2.8rem)] leading-[1.34] text-navy"
+            data-reveal
+            style={{ '--reveal-delay': '80ms' } as React.CSSProperties}
+          >
+            고객과 함께 성장하는
+            <br />
+            <span className="text-gold-deep">든든한 투자 파트너</span>
+          </h2>
+          <div className="rule-gold mt-8" data-reveal="fade" />
+          <p
+            className="mt-8 max-w-[40rem] text-[clamp(1.02rem,1.5vw,1.14rem)] font-medium leading-[1.85] text-ink"
+            data-reveal
+            style={{ '--reveal-delay': '120ms' } as React.CSSProperties}
+          >
+            오늘날의 투자 시장은 단순한 정보만으로는 올바른 판단을 내리기
+            어려운 시대입니다. 원타임 그룹은 정확한 분석과 책임 있는 의사결정,
+            그리고 고객과의 신뢰를 가장 중요한 가치로 삼습니다.
+          </p>
+          <p
+            className="mt-5 max-w-[40rem] text-[0.99rem] leading-[1.9] text-muted"
+            data-reveal
+            style={{ '--reveal-delay': '180ms' } as React.CSSProperties}
+          >
+            단기적인 성과보다 안정성과 지속 가능성에 기반한 장기적인 투자
+            방향으로, 변화하는 시장 속에서도 고객과 함께 성장하는 든든한
+            파트너가 되겠습니다.
+          </p>
+
+          <div
+            className="mt-9 flex flex-wrap items-end justify-between gap-6 border-t border-line pt-8"
+            data-reveal
+            style={{ '--reveal-delay': '240ms' } as React.CSSProperties}
+          >
+            <div>
+              <p className="font-sans text-[0.78rem] tracking-[0.16em] text-muted">
+                원타임 그룹 대표이사
+              </p>
+              <p className="display mt-1.5 text-[1.85rem] leading-none text-navy">
+                권성수
+              </p>
+            </div>
+            <Link
+              to="/about"
+              className="group inline-flex items-center gap-2 text-[0.96rem] font-semibold text-navy"
+            >
+              <span className="border-b-2 border-gold pb-0.5">
+                대표 인사말 전문 보기
+              </span>
+              <span
+                className="text-gold-deep transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden
+              >
+                →
+              </span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function Highlights() {
   return (
     <section className="border-t border-line bg-white py-24 sm:py-32">
@@ -386,6 +474,7 @@ export default function Home() {
       <Hero />
       <MarketOverview />
       <Intro />
+      <CeoMessage />
       <Highlights />
       <ServicesPreview />
       <CtaBand />
