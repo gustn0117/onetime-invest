@@ -85,7 +85,7 @@ export default function Header() {
         <div className="mx-auto flex h-[72px] max-w-[1280px] items-center justify-between px-5 sm:h-[88px] sm:px-8">
           <Brandmark light={!scrolled} />
 
-          <nav className="hidden items-center gap-9 lg:flex" aria-label="주요 메뉴">
+          <nav className="hidden items-center gap-12 lg:flex" aria-label="주요 메뉴">
             {NAV.map((item) => {
               const active = isActive(item.to)
               return (
@@ -114,7 +114,42 @@ export default function Header() {
             })}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <div className="hidden text-right leading-tight xl:block">
+              <p
+                className={`text-[0.58rem] font-bold tracking-[0.18em] ${
+                  scrolled ? 'text-gold-deep' : 'text-gold-soft'
+                }`}
+              >
+                멤버십 문의
+              </p>
+              <a
+                href="tel:070-4633-5330"
+                className={`mt-1 block text-[0.9rem] font-bold tracking-[0.01em] ${
+                  scrolled ? 'text-navy' : 'text-ivory'
+                }`}
+              >
+                070-4633-5330
+              </a>
+              <a
+                href="mailto:onetimeinvest1@gmail.com"
+                className={`block text-[0.72rem] transition-colors duration-300 ${
+                  scrolled
+                    ? 'text-ink-soft hover:text-navy'
+                    : 'text-ivory/70 hover:text-ivory'
+                }`}
+              >
+                onetimeinvest1@gmail.com
+              </a>
+            </div>
+
+            <span
+              className={`hidden h-9 w-px xl:block ${
+                scrolled ? 'bg-line' : 'bg-ivory/25'
+              }`}
+              aria-hidden
+            />
+
             <Link
               to="/contact"
               className="btn-gold hidden rounded-full px-6 py-3 text-[0.9rem] font-semibold tracking-[0.04em] transition-transform duration-300 hover:-translate-y-0.5 lg:inline-flex"

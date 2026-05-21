@@ -9,8 +9,8 @@ const PRINCIPLES = ['정확한 분석', '책임 있는 의사결정', '고객과
 const HERO_VIDEO_FILTER = 'brightness(1.07) saturate(1.12) sepia(0.3)'
 
 const STATS = [
-  { value: '4,865명', label: '유치회원' },
-  { value: '186억', label: '거래소 누적투자금' },
+  { value: '1,054+', label: '유치회원' },
+  { value: '74억', label: '거래소 누적투자금' },
   { value: '84%', label: '전년도 누적수익률' },
   { value: '23.4%', label: '월 평균 수익률' },
 ]
@@ -79,7 +79,7 @@ function Hero() {
           >
             한 번의 기회가
             <br />
-            <span className="text-gold-soft">미래</span>를 바꿉니다
+            <span className="text-gold-soft">미래</span>를 바꿉니다.
           </h1>
 
           <p
@@ -87,7 +87,8 @@ function Hero() {
             data-reveal
             style={{ '--reveal-delay': '200ms' } as React.CSSProperties}
           >
-            원타임 그룹은 가장 중요한 투자 순간에 함께합니다.
+            <span className="font-bold text-ivory">원타임 그룹</span>은 가장
+            중요한 투자 순간에 함께합니다.
           </p>
           <p
             className="mt-4 max-w-[33rem] text-[0.99rem] leading-[1.85] text-ivory/60"
