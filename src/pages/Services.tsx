@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
+import PhotoCard from '../components/PhotoCard'
 import { SERVICES } from '../data'
 
 const PILLARS = [
@@ -50,49 +51,23 @@ function ServiceList() {
           </p>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
           {SERVICES.map((s, i) => (
-            <article
+            <div
               key={s.no}
-              className="group relative overflow-hidden rounded-2xl border border-line bg-white p-8 transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/50 hover:shadow-[0_30px_64px_-36px_rgba(12,28,54,0.46)] sm:p-10"
               data-reveal
               style={
                 { '--reveal-delay': `${(i % 2) * 110}ms` } as React.CSSProperties
               }
             >
-              <span
-                className="display absolute right-7 top-5 text-[4.4rem] leading-none text-navy/[0.06] transition-colors duration-500 group-hover:text-gold/20"
-                aria-hidden
-              >
-                {s.no}
-              </span>
-              <div className="relative">
-                <span className="flex h-15 w-15 items-center justify-center rounded-xl bg-navy text-gold-soft transition-colors duration-500 group-hover:bg-gold group-hover:text-navy">
-                  <svg viewBox="0 0 40 40" className="h-8 w-8">
-                    {s.icon}
-                  </svg>
-                </span>
-                <p className="mt-6 font-sans text-[0.66rem] font-semibold tracking-[0.3em] text-gold-deep">
-                  {s.en.toUpperCase()}
-                </p>
-                <h3 className="display-kr mt-2 text-[clamp(1.3rem,2vw,1.6rem)] text-navy">
-                  {s.title}
-                </h3>
-                <p className="mt-3.5 text-[0.95rem] leading-[1.85] text-muted">
-                  {s.desc}
-                </p>
-                <ul className="mt-6 flex flex-wrap gap-2">
-                  {s.tags.map((t) => (
-                    <li
-                      key={t}
-                      className="rounded-full bg-navy/[0.05] px-3.5 py-1.5 text-[0.8rem] font-medium text-ink-soft"
-                    >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
+              <PhotoCard
+                image={s.image}
+                no={s.no}
+                en={s.en}
+                title={s.title}
+                desc={s.desc}
+              />
+            </div>
           ))}
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import MarketOverview from '../components/MarketOverview'
+import PhotoCard from '../components/PhotoCard'
 import { HIGHLIGHTS, SERVICES } from '../data'
 
 const PRINCIPLES = ['정확한 분석', '책임 있는 의사결정', '고객과의 신뢰']
@@ -367,24 +368,19 @@ function Highlights() {
 
         <div className="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
           {HIGHLIGHTS.map((h, i) => (
-            <article
+            <div
               key={h.title}
-              className="group rounded-2xl border border-line bg-white p-8 transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/45 hover:shadow-[0_30px_64px_-40px_rgba(12,28,54,0.42)]"
               data-reveal
               style={{ '--reveal-delay': `${i * 110}ms` } as React.CSSProperties}
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-navy text-gold-soft transition-colors duration-500 group-hover:bg-gold group-hover:text-navy">
-                <svg viewBox="0 0 40 40" className="h-7 w-7">
-                  {h.icon}
-                </svg>
-              </span>
-              <h3 className="display-kr mt-6 text-[1.3rem] text-navy">
-                {h.title}
-              </h3>
-              <p className="mt-3 text-[0.94rem] leading-[1.8] text-muted">
-                {h.desc}
-              </p>
-            </article>
+              <PhotoCard
+                image={h.image}
+                no={h.no}
+                en={h.en}
+                title={h.title}
+                desc={h.desc}
+              />
+            </div>
           ))}
         </div>
       </div>
