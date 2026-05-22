@@ -143,21 +143,9 @@ function Greeting() {
       <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
         <div className="text-center" data-reveal="fade">
           <p className="eyebrow eyebrow--center">CEO Message · 인사말</p>
-          <h2 className="display-kr mx-auto mt-6 max-w-[24rem] text-[clamp(1.95rem,3.7vw,3.05rem)] leading-[1.3] text-navy">
+          <h2 className="display-kr mt-6 whitespace-nowrap text-[clamp(1.55rem,3.3vw,2.9rem)] leading-[1.3] text-navy">
             원타임 그룹 <span className="text-gold-deep">대표 인사말</span>
           </h2>
-        </div>
-
-        <div
-          className="mt-14 overflow-hidden rounded-2xl border border-line shadow-[0_36px_80px_-50px_rgba(12,28,54,0.5)]"
-          data-reveal="fade"
-        >
-          <img
-            src="/photo-lounge.jpg"
-            alt="밝고 개방적인 원타임 그룹의 오피스 라운지"
-            loading="lazy"
-            className="aspect-[16/7] w-full object-cover"
-          />
         </div>
 
         <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-14">
