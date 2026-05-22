@@ -422,31 +422,22 @@ function ServicesPreview() {
           </Link>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
           {SERVICES.map((s, i) => (
             <Link
               key={s.no}
               to="/services"
-              className="group relative flex items-start gap-5 overflow-hidden rounded-2xl border border-line bg-white p-7 transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/50 hover:shadow-[0_30px_64px_-38px_rgba(12,28,54,0.42)] sm:p-8"
+              className="block transition-transform duration-500 hover:-translate-y-1.5"
               data-reveal
               style={{ '--reveal-delay': `${(i % 2) * 110}ms` } as React.CSSProperties}
             >
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-navy text-gold-soft transition-colors duration-500 group-hover:bg-gold group-hover:text-navy">
-                <svg viewBox="0 0 40 40" className="h-7 w-7">
-                  {s.icon}
-                </svg>
-              </span>
-              <span className="min-w-0">
-                <span className="font-sans text-[0.66rem] font-semibold tracking-[0.3em] text-gold-deep">
-                  {s.no} · {s.en.toUpperCase()}
-                </span>
-                <span className="display-kr mt-1.5 block text-[1.28rem] text-navy">
-                  {s.title}
-                </span>
-                <span className="mt-2 block text-[0.92rem] leading-[1.75] text-muted">
-                  {s.desc}
-                </span>
-              </span>
+              <PhotoCard
+                image={s.image}
+                no={s.no}
+                en={s.en}
+                title={s.title}
+                desc={s.desc}
+              />
             </Link>
           ))}
         </div>
