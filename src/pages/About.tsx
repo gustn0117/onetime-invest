@@ -19,7 +19,7 @@ const LETTER_BOTTOM = [
 
 function Overview() {
   return (
-    <section className="bg-white py-24 sm:py-32">
+    <section className="border-t border-line bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
@@ -139,7 +139,7 @@ function Values() {
 
 function Greeting() {
   return (
-    <section className="border-t border-line bg-white py-24 sm:py-32">
+    <section className="bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
         <div className="text-center" data-reveal="fade">
           <p className="eyebrow eyebrow--center">CEO Message · 인사말</p>
@@ -298,9 +298,9 @@ export default function About() {
         image="/photo-office.jpg"
         crumb="회사소개"
       />
+      <Greeting />
       <Overview />
       <Values />
-      <Greeting />
     </>
   )
 }
