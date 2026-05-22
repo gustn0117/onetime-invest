@@ -2,13 +2,13 @@ import { useState } from 'react'
 import PageHero from '../components/PageHero'
 import { supabase } from '../lib/supabase'
 
-const CONTACT_EMAIL = 'contact@onetime.co.kr'
+const CONTACT_EMAIL = 'onetimeinvest1@gmail.com'
 const ERR = '#cf4b3e'
 
 const CHANNELS = [
   {
     label: '대표번호',
-    value: '1600-0000',
+    value: '070-4633-5330',
     icon: (
       <path
         d="M9 5h6l2 7-4 2c1.4 3 3.6 5.2 6.6 6.6l2-4 7 2v6c0 1.7-1.4 3-3 3C18 35 5 22 5 8c0-1.7 1.3-3 3-3Z"
@@ -70,7 +70,7 @@ const CHANNELS = [
   },
   {
     label: '오시는 길',
-    value: '서울특별시 강남구',
+    value: '경기도 고양시 일산동구 연리지로 50',
     icon: (
       <>
         <path

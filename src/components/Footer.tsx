@@ -10,9 +10,19 @@ const QUICK = [
 ]
 
 const INFO = [
-  { label: '대표번호', value: '1600-0000' },
-  { label: '이메일', value: 'contact@onetime.co.kr' },
+  { label: '전화', value: '070-4633-5330' },
+  { label: '이메일', value: 'onetimeinvest1@gmail.com' },
   { label: '상담시간', value: '평일 09:00 – 18:00' },
+]
+
+const COMPANY = [
+  { label: '상호', value: '원타임 그룹' },
+  { label: '대표', value: '권성수' },
+  { label: '사업자등록번호', value: '499-63-00904' },
+  {
+    label: '주소',
+    value: '경기도 고양시 일산동구 연리지로 50, 상가동 9층 903호',
+  },
 ]
 
 export default function Footer() {
@@ -90,8 +100,17 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* business registration info */}
+        <div className="mt-14 flex flex-wrap gap-x-5 gap-y-2 border-t border-ivory/10 pt-8 text-[0.8rem] text-ivory/55">
+          {COMPANY.map((c) => (
+            <span key={c.label}>
+              <span className="text-ivory/35">{c.label}</span> {c.value}
+            </span>
+          ))}
+        </div>
+
         {/* disclaimer */}
-        <p className="mt-14 border-t border-ivory/10 pt-8 text-[0.8rem] leading-[1.85] text-ivory/40">
+        <p className="mt-6 text-[0.8rem] leading-[1.85] text-ivory/40">
           본 웹사이트는 원타임 그룹(ONE TIME INVEST COMPANY)의 회사 소개를 위한
           것으로, 게재된 내용은 특정 투자 상품의 권유나 수익을 보장하지
           않습니다. 모든 투자에는 원금 손실의 위험이 있으며, 투자에 대한 최종
@@ -99,13 +118,10 @@ export default function Footer() {
         </p>
 
         {/* bottom bar */}
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 border-t border-ivory/10 pt-7">
           <p className="text-[0.78rem] tracking-[0.04em] text-ivory/45">
-            © 2026 ONE TIME INVEST COMPANY. All rights reserved.
+            © 2026 원타임 그룹 (ONE TIME INVEST COMPANY). All rights reserved.
           </p>
-          <span className="text-[0.78rem] text-ivory/45">
-            원타임 그룹 · 대표 권성수
-          </span>
         </div>
       </div>
     </footer>
