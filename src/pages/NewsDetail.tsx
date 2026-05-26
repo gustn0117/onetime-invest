@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase, type NewsPost } from '../lib/supabase'
+import { parseBody } from '../lib/postBody'
 
 function fmtDate(iso: string) {
   const d = new Date(iso)
@@ -114,8 +115,22 @@ export default function NewsDetail() {
               className="mb-12 w-full rounded-2xl border border-line object-cover"
             />
           )}
-          <div className="whitespace-pre-wrap text-[clamp(1rem,1.5vw,1.1rem)] leading-[1.95] text-ink-soft">
-            {post.body}
+          <div className="space-y-7 text-[clamp(1rem,1.5vw,1.1rem)] leading-[1.95] text-ink-soft">
+            {parseBody(post.body).map((part, i) =>
+              part.kind === 'img' ? (
+                <img
+                  key={i}
+                  src={part.value}
+                  alt=""
+                  loading="lazy"
+                  className="w-full rounded-2xl border border-line object-cover"
+                />
+              ) : (
+                <p key={i} className="whitespace-pre-wrap">
+                  {part.value}
+                </p>
+              ),
+            )}
           </div>
 
           <div className="mt-14 border-t border-line pt-9">

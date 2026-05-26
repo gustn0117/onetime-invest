@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import { supabase, NEWS_CATEGORIES, type NewsPost } from '../lib/supabase'
+import { stripBodyImages } from '../lib/postBody'
 
 const FILTERS = ['전체', ...NEWS_CATEGORIES] as const
 
@@ -40,7 +41,7 @@ function PostCard({ post }: { post: NewsPost }) {
           {post.title}
         </h3>
         <p className="mt-3 line-clamp-2 text-[0.92rem] leading-[1.7] text-muted">
-          {post.body}
+          {stripBodyImages(post.body)}
         </p>
         <span className="mt-5 text-[0.8rem] font-medium tracking-[0.04em] text-muted">
           {fmtDate(post.created_at)}

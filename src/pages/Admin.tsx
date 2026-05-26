@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   supabase,
   ADMIN_EMAIL,
@@ -107,9 +107,12 @@ function NewsPanel() {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState('')
   const [saving, setSaving] = useState(false)
+  const [bodyImgBusy, setBodyImgBusy] = useState(false)
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(
     null,
   )
+  const bodyRef = useRef<HTMLTextAreaElement>(null)
+  const bodyImgInputRef = useRef<HTMLInputElement>(null)
 
   const loadPosts = useCallback(async () => {
     setLoading(true)
@@ -129,6 +132,46 @@ function NewsPanel() {
     const f = e.target.files?.[0] ?? null
     setFile(f)
     setPreview(f ? URL.createObjectURL(f) : '')
+  }
+
+  const insertAtCursor = (marker: string) => {
+    const ta = bodyRef.current
+    if (!ta) {
+      setBody((b) => (b ? b + marker : marker.trimStart()))
+      return
+    }
+    const start = ta.selectionStart ?? body.length
+    const end = ta.selectionEnd ?? body.length
+    const next = body.slice(0, start) + marker + body.slice(end)
+    setBody(next)
+    requestAnimationFrame(() => {
+      const pos = start + marker.length
+      ta.focus()
+      ta.setSelectionRange(pos, pos)
+    })
+  }
+
+  const onBodyImagePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]
+    e.target.value = ''
+    if (!f) return
+    setBodyImgBusy(true)
+    setMsg(null)
+    try {
+      const ext = (f.name.split('.').pop() || 'jpg').toLowerCase()
+      const path = `body/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+      const { error } = await supabase.storage
+        .from(NEWS_BUCKET)
+        .upload(path, f, { cacheControl: '3600', upsert: false })
+      if (error) throw error
+      const url = supabase.storage.from(NEWS_BUCKET).getPublicUrl(path).data
+        .publicUrl
+      insertAtCursor(`\n\n![](${url})\n\n`)
+    } catch {
+      setMsg({ kind: 'err', text: '이미지 업로드에 실패했습니다.' })
+    } finally {
+      setBodyImgBusy(false)
+    }
   }
 
   const submit = async (e: React.FormEvent) => {
@@ -224,16 +267,53 @@ function NewsPanel() {
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
-                본문 <span className="text-gold-deep">*</span>
-              </label>
+              <div className="mb-1.5 flex items-center justify-between gap-3">
+                <label className="block text-[0.82rem] font-semibold text-ink-soft">
+                  본문 <span className="text-gold-deep">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => bodyImgInputRef.current?.click()}
+                  disabled={bodyImgBusy}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-1.5 text-[0.78rem] font-semibold text-ink-soft transition-colors duration-200 hover:border-gold hover:text-gold-deep disabled:opacity-50"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="9" cy="9" r="2" />
+                    <path d="m21 15-5-5L5 21" />
+                  </svg>
+                  {bodyImgBusy ? '업로드 중…' : '본문에 사진 삽입'}
+                </button>
+                <input
+                  ref={bodyImgInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={onBodyImagePick}
+                  className="hidden"
+                />
+              </div>
               <textarea
+                ref={bodyRef}
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 rows={9}
-                placeholder="내용을 입력하세요. 줄바꿈은 그대로 반영됩니다."
-                className={FIELD + ' resize-y'}
+                placeholder="내용을 입력하세요. 줄바꿈은 그대로 반영됩니다. 사진은 커서 위치에 ![](url) 형태로 삽입됩니다."
+                className={FIELD + ' resize-y font-mono text-[0.92rem]'}
               />
+              <p className="mt-1.5 text-[0.76rem] leading-[1.6] text-muted">
+                사진은 본문 중간 어디든 들어갈 수 있어요. 버튼을 누르면 커서
+                위치에 자동 삽입됩니다.
+              </p>
             </div>
             <div>
               <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
