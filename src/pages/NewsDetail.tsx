@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase, type NewsPost } from '../lib/supabase'
-import { parseBody } from '../lib/postBody'
+import { parseBody, stripBodyImages } from '../lib/postBody'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 function fmtDate(iso: string) {
   const d = new Date(iso)
@@ -14,6 +15,19 @@ export default function NewsDetail() {
   const { id } = useParams()
   const [post, setPost] = useState<NewsPost | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading')
+
+  usePageMeta(
+    post
+      ? {
+          title: `${post.title} — 원타임 그룹 NEWS & INSIGHT`,
+          description:
+            stripBodyImages(post.body).slice(0, 160) ||
+            `${post.category} | 원타임 그룹이 전하는 경제 뉴스와 시장 시황.`,
+          path: `/news/${post.id}`,
+          image: post.thumbnail_url ?? undefined,
+        }
+      : null,
+  )
 
   useEffect(() => {
     let alive = true

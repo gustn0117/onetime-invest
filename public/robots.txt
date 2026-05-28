@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+User-agent: Yeti
+Allow: /
+Disallow: /admin
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+
+Sitemap: https://onetimegroup.co.kr/sitemap.xml
