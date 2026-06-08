@@ -125,14 +125,14 @@ export default function Header() {
                 Membership&nbsp;Desk
               </p>
               <a
-                href="tel:070-4633-5330"
+                href="tel:070-4336-5191"
                 className={`mt-1.5 block text-[0.84rem] font-semibold tracking-[0.01em] transition-colors duration-300 ${
                   scrolled
                     ? 'text-navy hover:text-gold-deep'
                     : 'text-ivory hover:text-gold-soft'
                 }`}
               >
-                070-4633-5330
+                070-4336-5191
               </a>
               <a
                 href="mailto:onetimeinvest1@gmail.com"

@@ -10,7 +10,7 @@ const QUICK = [
 ]
 
 const INFO = [
-  { label: '전화', value: '070-4633-5330' },
+  { label: '전화', value: '070-4336-5191' },
   { label: '이메일', value: 'onetimeinvest1@gmail.com' },
   { label: '상담시간', value: '평일 09:00 – 18:00' },
 ]

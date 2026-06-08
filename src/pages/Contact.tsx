@@ -8,7 +8,7 @@ const ERR = '#cf4b3e'
 const CHANNELS = [
   {
     label: '대표번호',
-    value: '070-4633-5330',
+    value: '070-4336-5191',
     icon: (
       <path
         d="M9 5h6l2 7-4 2c1.4 3 3.6 5.2 6.6 6.6l2-4 7 2v6c0 1.7-1.4 3-3 3C18 35 5 22 5 8c0-1.7 1.3-3 3-3Z"

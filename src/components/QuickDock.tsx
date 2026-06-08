@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchPublicSettings } from '../lib/settings'
 
-const PHONE = '070-4633-5330'
+const PHONE = '070-4336-5191'
 
 function TalkIcon() {
   return (

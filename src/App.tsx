@@ -25,7 +25,7 @@ const ROUTE_META: Record<string, PageMeta> = {
     title:
       '원타임 그룹 | ONE TIME INVEST COMPANY — 투자 컨설팅 · 자산관리 파트너',
     description:
-      '원타임 그룹(ONE TIME INVEST COMPANY)은 정확한 분석과 책임 있는 의사결정, 고객과의 신뢰를 바탕으로 가장 중요한 투자 순간에 함께하는 투자 컨설팅 파트너입니다. 상담 070-4633-5330',
+      '원타임 그룹(ONE TIME INVEST COMPANY)은 정확한 분석과 책임 있는 의사결정, 고객과의 신뢰를 바탕으로 가장 중요한 투자 순간에 함께하는 투자 컨설팅 파트너입니다. 상담 070-4336-5191',
   },
   '/about': {
     title: '회사소개 — 원타임 그룹 | 신뢰받는 투자 컨설팅 파트너',
@@ -43,9 +43,9 @@ const ROUTE_META: Record<string, PageMeta> = {
       '상담부터 자산 운영까지 — 원타임 그룹의 체계적인 컨설팅 프로세스로 안정적이고 효율적인 투자를 돕습니다.',
   },
   '/contact': {
-    title: '상담 문의 — 원타임 그룹 | 070-4633-5330',
+    title: '상담 문의 — 원타임 그룹 | 070-4336-5191',
     description:
-      '원타임 그룹 상담 문의 — 070-4633-5330 / onetimeinvest1@gmail.com / 평일 09:00-18:00 / 경기도 고양시 일산동구 연리지로 50',
+      '원타임 그룹 상담 문의 — 070-4336-5191 / onetimeinvest1@gmail.com / 평일 09:00-18:00 / 경기도 고양시 일산동구 연리지로 50',
   },
   '/news': {
     title: 'NEWS & INSIGHT — 원타임 그룹 | 경제 뉴스 · 시장 시황 · 수익 내역',
