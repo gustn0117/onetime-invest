@@ -111,8 +111,12 @@ function NewsPanel() {
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(
     null,
   )
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [originalThumb, setOriginalThumb] = useState<string | null>(null)
+  const [dropThumb, setDropThumb] = useState(false)
   const bodyRef = useRef<HTMLTextAreaElement>(null)
   const bodyImgInputRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const loadPosts = useCallback(async () => {
     setLoading(true)
@@ -174,6 +178,46 @@ function NewsPanel() {
     }
   }
 
+  const resetForm = () => {
+    setEditingId(null)
+    setTitle('')
+    setCategory(NEWS_CATEGORIES[0])
+    setBody('')
+    setFile(null)
+    setPreview('')
+    setOriginalThumb(null)
+    setDropThumb(false)
+  }
+
+  const startEdit = (post: NewsPost) => {
+    setEditingId(post.id)
+    setTitle(post.title)
+    setCategory(post.category)
+    setBody(post.body)
+    setFile(null)
+    setPreview('')
+    setOriginalThumb(post.thumbnail_url)
+    setDropThumb(false)
+    setMsg(null)
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }
+
+  const cancelEdit = () => {
+    resetForm()
+    setMsg(null)
+  }
+
+  const removeThumbFromStorage = async (url: string) => {
+    const marker = `/${NEWS_BUCKET}/`
+    const idx = url.indexOf(marker)
+    if (idx < 0) return
+    await supabase.storage
+      .from(NEWS_BUCKET)
+      .remove([url.slice(idx + marker.length)])
+  }
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || !body.trim()) {
@@ -183,7 +227,13 @@ function NewsPanel() {
     setSaving(true)
     setMsg(null)
     try {
-      let thumbnail_url: string | null = null
+      // resolve final thumbnail_url for this save:
+      //  - new file picked         → upload, use new URL
+      //  - editing & remove flag   → null (and delete original)
+      //  - editing & no change     → keep original (undefined = don't include in update)
+      //  - new post & no file      → null
+      let nextThumb: string | null | undefined =
+        editingId !== null ? undefined : null
       if (file) {
         const ext = (file.name.split('.').pop() || 'jpg').toLowerCase()
         const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
@@ -191,26 +241,49 @@ function NewsPanel() {
           .from(NEWS_BUCKET)
           .upload(path, file, { cacheControl: '3600', upsert: false })
         if (upErr) throw upErr
-        thumbnail_url = supabase.storage
+        nextThumb = supabase.storage
           .from(NEWS_BUCKET)
           .getPublicUrl(path).data.publicUrl
+        if (editingId && originalThumb) {
+          await removeThumbFromStorage(originalThumb)
+        }
+      } else if (editingId && dropThumb && originalThumb) {
+        nextThumb = null
+        await removeThumbFromStorage(originalThumb)
       }
-      const { error: insErr } = await supabase.from('news_posts').insert({
-        title: title.trim(),
-        category,
-        body: body.trim(),
-        thumbnail_url,
-      })
-      if (insErr) throw insErr
-      setTitle('')
-      setCategory(NEWS_CATEGORIES[0])
-      setBody('')
-      setFile(null)
-      setPreview('')
-      setMsg({ kind: 'ok', text: '게시글이 등록되었습니다.' })
+
+      if (editingId) {
+        const payload: Record<string, unknown> = {
+          title: title.trim(),
+          category,
+          body: body.trim(),
+        }
+        if (nextThumb !== undefined) payload.thumbnail_url = nextThumb
+        const { error: updErr } = await supabase
+          .from('news_posts')
+          .update(payload)
+          .eq('id', editingId)
+        if (updErr) throw updErr
+        setMsg({ kind: 'ok', text: '글이 수정되었습니다.' })
+      } else {
+        const { error: insErr } = await supabase.from('news_posts').insert({
+          title: title.trim(),
+          category,
+          body: body.trim(),
+          thumbnail_url: nextThumb ?? null,
+        })
+        if (insErr) throw insErr
+        setMsg({ kind: 'ok', text: '게시글이 등록되었습니다.' })
+      }
+      resetForm()
       loadPosts()
     } catch {
-      setMsg({ kind: 'err', text: '등록에 실패했습니다. 다시 시도해 주세요.' })
+      setMsg({
+        kind: 'err',
+        text: editingId
+          ? '수정에 실패했습니다. 다시 시도해 주세요.'
+          : '등록에 실패했습니다. 다시 시도해 주세요.',
+      })
     } finally {
       setSaving(false)
     }
@@ -219,24 +292,36 @@ function NewsPanel() {
   const remove = async (post: NewsPost) => {
     if (!window.confirm(`'${post.title}' 글을 삭제할까요?`)) return
     if (post.thumbnail_url) {
-      const marker = `/${NEWS_BUCKET}/`
-      const idx = post.thumbnail_url.indexOf(marker)
-      if (idx >= 0) {
-        await supabase.storage
-          .from(NEWS_BUCKET)
-          .remove([post.thumbnail_url.slice(idx + marker.length)])
-      }
+      await removeThumbFromStorage(post.thumbnail_url)
     }
     await supabase.from('news_posts').delete().eq('id', post.id)
+    if (editingId === post.id) resetForm()
     loadPosts()
   }
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
       {/* form */}
-      <form onSubmit={submit} className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
-        <div className="rounded-2xl border border-line bg-white p-7 shadow-[0_30px_70px_-54px_rgba(12,28,54,0.5)]">
-          <h2 className="display-kr text-[1.3rem] text-navy">새 글 작성</h2>
+      <form
+        ref={formRef}
+        onSubmit={submit}
+        className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start"
+      >
+        <div
+          className={`rounded-2xl border bg-white p-7 shadow-[0_30px_70px_-54px_rgba(12,28,54,0.5)] transition-colors duration-300 ${
+            editingId ? 'border-gold/70 ring-1 ring-gold/30' : 'border-line'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="display-kr text-[1.3rem] text-navy">
+              {editingId ? '글 수정' : '새 글 작성'}
+            </h2>
+            {editingId && (
+              <span className="rounded-full bg-gold/15 px-3 py-1 text-[0.72rem] font-bold tracking-[0.04em] text-gold-deep">
+                수정 모드
+              </span>
+            )}
+          </div>
           <div className="mt-5 space-y-4">
             <div>
               <label className="mb-1.5 block text-[0.82rem] font-semibold text-ink-soft">
@@ -325,12 +410,34 @@ function NewsPanel() {
                 onChange={pickFile}
                 className="block w-full text-[0.84rem] text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-navy file:px-4 file:py-2 file:text-[0.82rem] file:font-semibold file:text-ivory hover:file:bg-navy-soft"
               />
-              {preview && (
+              {preview ? (
                 <img
                   src={preview}
                   alt=""
                   className="mt-3 aspect-[16/10] w-full rounded-xl border border-line object-cover"
                 />
+              ) : editingId && originalThumb && !dropThumb ? (
+                <div className="mt-3">
+                  <img
+                    src={originalThumb}
+                    alt=""
+                    className="aspect-[16/10] w-full rounded-xl border border-line object-cover"
+                  />
+                  <p className="mt-1.5 text-[0.76rem] text-muted">
+                    기존 이미지가 유지됩니다. 새 파일을 고르면 교체됩니다.
+                  </p>
+                </div>
+              ) : null}
+              {editingId && originalThumb && !file && (
+                <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-[0.82rem] text-ink-soft">
+                  <input
+                    type="checkbox"
+                    checked={dropThumb}
+                    onChange={(e) => setDropThumb(e.target.checked)}
+                    className="h-4 w-4 accent-navy"
+                  />
+                  대표 이미지 제거 (수정 저장 시 적용)
+                </label>
               )}
             </div>
           </div>
@@ -342,13 +449,31 @@ function NewsPanel() {
               {msg.text}
             </p>
           )}
-          <button
-            type="submit"
-            disabled={saving}
-            className="btn-gold mt-5 inline-flex w-full items-center justify-center rounded-xl py-3.5 text-[0.96rem] font-bold disabled:opacity-50"
-          >
-            {saving ? '등록 중…' : '게시글 등록'}
-          </button>
+          <div className="mt-5 flex gap-2.5">
+            <button
+              type="submit"
+              disabled={saving}
+              className="btn-gold inline-flex flex-1 items-center justify-center rounded-xl py-3.5 text-[0.96rem] font-bold disabled:opacity-50"
+            >
+              {saving
+                ? editingId
+                  ? '저장 중…'
+                  : '등록 중…'
+                : editingId
+                  ? '수정 저장'
+                  : '게시글 등록'}
+            </button>
+            {editingId && (
+              <button
+                type="button"
+                onClick={cancelEdit}
+                disabled={saving}
+                className="shrink-0 rounded-xl border border-line bg-white px-5 py-3.5 text-[0.9rem] font-semibold text-ink-soft transition-colors duration-200 hover:border-navy hover:text-navy disabled:opacity-50"
+              >
+                취소
+              </button>
+            )}
+          </div>
         </div>
       </form>
 
@@ -366,42 +491,58 @@ function NewsPanel() {
           </p>
         ) : (
           <ul className="mt-5 space-y-3">
-            {posts.map((p) => (
-              <li
-                key={p.id}
-                className="flex items-center gap-4 rounded-xl border border-line bg-white p-3.5"
-              >
-                <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-navy">
-                  {p.thumbnail_url ? (
-                    <img
-                      src={p.thumbnail_url}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="grid-lines h-full w-full" aria-hidden />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[0.7rem] font-bold tracking-[0.04em] text-gold-deep">
-                    {p.category}
-                  </span>
-                  <p className="truncate text-[0.96rem] font-semibold text-navy">
-                    {p.title}
-                  </p>
-                  <p className="text-[0.78rem] text-muted">
-                    {fmtDate(p.created_at)}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => remove(p)}
-                  className="shrink-0 rounded-lg border border-line px-3 py-2 text-[0.8rem] font-semibold text-ink-soft transition-colors duration-300 hover:border-[#cf4b3e] hover:text-[#cf4b3e]"
+            {posts.map((p) => {
+              const isEditing = editingId === p.id
+              return (
+                <li
+                  key={p.id}
+                  className={`flex items-center gap-4 rounded-xl border bg-white p-3.5 transition-colors duration-200 ${
+                    isEditing
+                      ? 'border-gold/70 bg-gold/5'
+                      : 'border-line'
+                  }`}
                 >
-                  삭제
-                </button>
-              </li>
-            ))}
+                  <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-navy">
+                    {p.thumbnail_url ? (
+                      <img
+                        src={p.thumbnail_url}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="grid-lines h-full w-full" aria-hidden />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[0.7rem] font-bold tracking-[0.04em] text-gold-deep">
+                      {p.category}
+                    </span>
+                    <p className="truncate text-[0.96rem] font-semibold text-navy">
+                      {p.title}
+                    </p>
+                    <p className="text-[0.78rem] text-muted">
+                      {fmtDate(p.created_at)}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => startEdit(p)}
+                      className="rounded-lg border border-line px-3 py-2 text-[0.8rem] font-semibold text-ink-soft transition-colors duration-300 hover:border-gold hover:text-gold-deep"
+                    >
+                      수정
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => remove(p)}
+                      className="rounded-lg border border-line px-3 py-2 text-[0.8rem] font-semibold text-ink-soft transition-colors duration-300 hover:border-[#cf4b3e] hover:text-[#cf4b3e]"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>
